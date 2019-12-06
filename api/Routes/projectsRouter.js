@@ -35,7 +35,13 @@ router.post('/', (req, res) => {
     const proBody = req.body;
     projectDb.insert(proBody)
         .then(project => {
-                res.status(200).json(project)
+            if(project && !proBody.name){
+                res.status(400).json({ message: "Project Needs a name."})
+            } else if(project && !proBody.description){
+                res.status(400).json({ message: "Project Needs a description."})
+            } else {
+                res.status(201).json(project);
+            }
         })
         .catch(err => {
             res.status(500).json({ message: 'Error Making Projects.'})
@@ -45,7 +51,11 @@ router.put('/:id', (req, res) => {
     const id = req.params.id;
     projectDb.update(id, req.body)
         .then(update => {
-            res.status(200).json({...update, ...req.body })
+            if(!update){
+                res.status(400).json({ message: "Invalid project id"})
+            } else {
+                res.status(200).json({...update, ...req.body })
+            }
         })
         .catch(err => {
             res.status(500).json({ errorMessage: "Project Could Not Be Modified."})
