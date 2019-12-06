@@ -47,22 +47,24 @@ router.post('/', (req, res) => {
         })
 });
             
-            // if(!newAction[0].project_id){
-            //     res.status(404).json({ errorMessage: "Project does not exist."})
-            // } else {
-            //     res.status(201).json(newAction)
-            // }
-                
-            // console.log(newAction)
-
-
-
 
 router.put('/:id', (req, res) => {
     const id = req.params.id;
     actionsDb.update(id, req.body)
         .then(update => {
-            res.status(200).json({...update, ...req.body })
+            console.log("This is update", update)
+            if(!update){
+                res.status(400).json({ message: "Invalid action id"})
+            } else if(update && update.project_id === id){
+                res.status(400).json({ message: "Invalid project id"})
+            } else if(update.description.length > 128 || update.description.length === 0){
+                res.status(400).json({ errorMessage: "Description has does not meet character limit requirements."})
+                update.abort()
+            } else if(!update.notes){
+                res.status(400).json({ errorMessage: "Project needs notes."})
+            } else {
+                res.status(200).json({...update})
+            }
         })
         .catch(err => {
             res.status(500).json({ errorMessage: "Action Could Not Be Modified."})
