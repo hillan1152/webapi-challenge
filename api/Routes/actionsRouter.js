@@ -29,14 +29,21 @@ router.get('/:id', (req, res) => {
 });
 router.post('/', (req, res) => {
     console.log('req', req.body)
-    const action = req.body
+    const action = req.body;
     actionsDb.insert(action)
         .then(newAction => {
-            console.log("new action", newAction)
-            res.status(201).json(newAction);
-        })
+            console.log('This is new action', newAction)
+            if(!newAction.project_id){
+                res.status(404).json({ errorMessage: "Project does not exist."})
+            } else if(newAction.description.length > 128 || newAction.description.length === 0){
+                res.status(400).json({ errorMessage: "Description has does not meet character limit requirements."})
+            } else if(!newAction.notes){
+                res.status(400).json({ errorMessage: "Project needs notes."})
+            } else {
+                res.status(201).json(newAction);
+        }})
         .catch(err => {
-            res.status(500).json({ message: "Error Posting Action Data."})
+            res.status(404).json({ message: "Project ID Does Not Exist."})
         })
 });
             
@@ -47,13 +54,7 @@ router.post('/', (req, res) => {
             // }
                 
             // console.log(newAction)
-            // if(!newAction.project_id){
-            //     res.status(404).json({ errorMessage: "Project does not exist."})
-            // } else if(newAction.description.length > 128 || newAction.description.length === 0){
-            //     res.status(400).json({ errorMessage: "Description has exceeded the character limit."})
-            // } else {
-            //     res.status(201).json(newAction);
-            // }
+
 
 
 
