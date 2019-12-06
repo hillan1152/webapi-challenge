@@ -1,4 +1,5 @@
 // IMPORTS AND JOIN SERVERS
+require("dotenv").config();
 const express = require('express');
 const actionsRouter = require('./Routes/actionsRouter');
 const projectsRouter = require('./Routes/projectsRouter');
@@ -17,6 +18,11 @@ function logger(req, res, next) {
   
     next();
   }
+
+// ROOT
+server.get("/", (req, res) => {
+    res.status(200).json({ message: "welcome"})
+})
 
 
 //EXPORT
